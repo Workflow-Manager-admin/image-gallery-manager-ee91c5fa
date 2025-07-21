@@ -1,47 +1,51 @@
 import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
 import './App.css';
+import Navbar from './components/Navbar';
+import GalleryGrid from './components/GalleryGrid';
+import GalleryList from './components/GalleryList';
+import ImageModal from './components/ImageModal';
+import { filterImages, fetchImages } from './utils/gallery-utils';
 
-// PUBLIC_INTERFACE
+/**
+ * PUBLIC_INTERFACE
+ * Main entrypoint for the Image Gallery App
+ * - Manages gallery state, search/filter, view mode, and image modal
+ */
 function App() {
   const [theme, setTheme] = useState('light');
+  const [images, setImages] = useState([]);
+  const [search, setSearch] = useState('');
+  const [viewMode, setViewMode] = useState('grid'); // or 'list'
+  const [modalImage, setModalImage] = useState(null);
 
-  // Effect to apply theme to document element
+  // Theme effect (light only, but infrastructure for theme switching)
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
-  // PUBLIC_INTERFACE
-  const toggleTheme = () => {
-    setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
-  };
+  useEffect(() => {
+    fetchImages().then(setImages);
+  }, []);
+
+  const filteredImages = filterImages(images, search);
 
   return (
     <div className="App">
-      <header className="App-header">
-        <button 
-          className="theme-toggle" 
-          onClick={toggleTheme}
-          aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-        >
-          {theme === 'light' ? '🌙 Dark' : '☀️ Light'}
-        </button>
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <p>
-          Current theme: <strong>{theme}</strong>
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Navbar
+        onSearch={setSearch}
+        viewMode={viewMode}
+        setViewMode={setViewMode}
+        // Could add dark/light theme toggle here in future
+      />
+      <main className="gallery-main">
+        <div className="gallery-container">
+          {viewMode === 'grid'
+            ? <GalleryGrid images={filteredImages} onImageClick={setModalImage} />
+            : <GalleryList images={filteredImages} onImageClick={setModalImage} />
+          }
+        </div>
+      </main>
+      <ImageModal image={modalImage} onClose={() => setModalImage(null)} />
     </div>
   );
 }
