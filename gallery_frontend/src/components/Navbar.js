@@ -1,8 +1,37 @@
-import React from 'react';
+import React, { useRef } from 'react';
 
 // PUBLIC_INTERFACE
-function Navbar({ onSearch, viewMode, setViewMode }) {
-  /** A modern navigation bar for the gallery app. */
+function Navbar({ onSearch, viewMode, setViewMode, onUploadImage }) {
+  /** A modern navigation bar for the gallery app, now enables user image uploads. */
+  const fileInputRef = useRef(null);
+
+  const handleUploadBtnClick = () => {
+    // Programmatically open the hidden file input when upload button is clicked
+    if (fileInputRef.current) fileInputRef.current.value = null; // Reset input
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    // Only accept image files
+    if (!file.type.startsWith('image/')) {
+      alert("Only image files are allowed.");
+      return;
+    }
+    const reader = new window.FileReader();
+    reader.onload = (ev) => {
+      // Compose a minimal image object; Title from file name
+      onUploadImage && onUploadImage({
+        id: `user-${Date.now()}`,
+        src: ev.target.result,
+        title: file.name.replace(/\.[^.]+$/, ''),
+        description: '' // User can edit in future extension
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+
   return (
     <nav className="navbar">
       <div className="navbar-title">
@@ -31,7 +60,24 @@ function Navbar({ onSearch, viewMode, setViewMode }) {
         </div>
       </div>
       <div className="navbar-actions">
-        <button className="upload-btn" disabled={true} title="Image upload coming soon!">＋ Upload</button>
+        <button
+          className="upload-btn"
+          title="Upload a new image"
+          onClick={handleUploadBtnClick}
+          tabIndex={0}
+          style={{ opacity: 1, cursor: 'pointer' }}
+        >
+          ＋ Upload
+        </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          style={{ display: 'none' }}
+          onChange={handleFileChange}
+          aria-label="Upload image"
+          tabIndex={-1}
+        />
       </div>
     </nav>
   );

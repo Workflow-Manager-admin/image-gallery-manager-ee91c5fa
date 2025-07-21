@@ -29,12 +29,21 @@ function App() {
 
   const filteredImages = filterImages(images, search);
 
+  // PUBLIC_INTERFACE
+  function handleUploadImage(newImg) {
+    setImages(prev => [
+      { ...newImg },
+      ...prev,
+    ]);
+  }
+
   return (
     <div className="App">
       <Navbar
         onSearch={setSearch}
         viewMode={viewMode}
         setViewMode={setViewMode}
+        onUploadImage={handleUploadImage}
         // Could add dark/light theme toggle here in future
       />
       <main className="gallery-main">
