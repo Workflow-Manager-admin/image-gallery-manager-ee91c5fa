@@ -1,8 +1,12 @@
 import React, { useRef } from 'react';
+import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
+import AppsIcon from '@mui/icons-material/Apps';
+import ViewListIcon from '@mui/icons-material/ViewList';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 // PUBLIC_INTERFACE
 function Navbar({ onSearch, viewMode, setViewMode, onUploadImage }) {
-  /** A modern navigation bar for the gallery app, now enables user image uploads. */
+  /** A modern navigation bar for the gallery app, enables user image uploads. */
   const fileInputRef = useRef(null);
 
   const handleUploadBtnClick = () => {
@@ -35,7 +39,7 @@ function Navbar({ onSearch, viewMode, setViewMode, onUploadImage }) {
   return (
     <nav className="navbar">
       <div className="navbar-title">
-        <span className="navbar-logo" role="img" aria-label="gallery">🖼️</span>
+        <PhotoLibraryIcon className="navbar-logo" fontSize="large" style={{ marginRight: '0.35rem', color: 'var(--primary)' }} />
         <span>Gallery</span>
       </div>
       <div className="navbar-search">
@@ -51,12 +55,12 @@ function Navbar({ onSearch, viewMode, setViewMode, onUploadImage }) {
             className={`view-btn ${viewMode === 'grid' ? 'active' : ''}`}
             aria-label="Grid view"
             onClick={() => setViewMode('grid')}
-          >▦</button>
+          ><AppsIcon /></button>
           <button
             className={`view-btn ${viewMode === 'list' ? 'active' : ''}`}
             aria-label="List view"
             onClick={() => setViewMode('list')}
-          >≡</button>
+          ><ViewListIcon /></button>
         </div>
       </div>
       <div className="navbar-actions">
@@ -65,9 +69,10 @@ function Navbar({ onSearch, viewMode, setViewMode, onUploadImage }) {
           title="Upload a new image"
           onClick={handleUploadBtnClick}
           tabIndex={0}
-          style={{ opacity: 1, cursor: 'pointer' }}
+          style={{ opacity: 1, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.38em' }}
         >
-          ＋ Upload
+          <CloudUploadIcon fontSize="small" style={{ marginRight: '0.08em' }} />
+          Upload
         </button>
         <input
           ref={fileInputRef}
